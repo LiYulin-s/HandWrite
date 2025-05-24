@@ -28,8 +28,13 @@ jobs:
         python-version: "3.13" # Or your preferred Python version for building
 
     # 3. Install uv
-    - name: Install uv
+    - name: Install uv (Linux and macOS)
+      if: runner.os != 'Windows'
       run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    - name: Install uv (Windows)
+      if: runner.os == 'Windows'
+      run: powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
     # 4. Add uv to PATH for subsequent steps
     - name: Add uv to PATH
@@ -43,7 +48,7 @@ jobs:
     # 6. Build distribution using PyInstaller
     #    We use 'python -m PyInstaller' as 'uv tool run' is not the standard way to execute it.
     - name: Build distribution
-      run: python -m PyInstaller --onefile --noconsole main.py
+      run: uv tool run pyinstaller --onefile --noconsole main.py
 
     # 7. Copy additional dependencies (like ttf_library) into the 'dist' folder
     #    This step assumes 'ttf_library' is a directory at the root of your repository
