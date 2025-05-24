@@ -45,10 +45,18 @@ jobs:
     - name: Sync dependencies
       run: uv sync --all-extras  
 
+    - name: Enter the uv environment
+      if: runner.os != 'Windows'
+      run: source .venv/bin/activate
+
+    - name: Enter the uv environment
+      if: runner.os == 'Windows'
+      run: .venv\Scripts\Activate.ps1
+
     # 6. Build distribution using PyInstaller
     #    We use 'python -m PyInstaller' as 'uv tool run' is not the standard way to execute it.
     - name: Build distribution
-      run: uv tool run pyinstaller --onefile --noconsole main.py
+      run: pyinstaller --onefile --noconsole main.py
 
     # 7. Copy additional dependencies (like ttf_library) into the 'dist' folder
     #    This step assumes 'ttf_library' is a directory at the root of your repository
